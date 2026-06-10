@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Login – JobPortal</title>
+  <meta name="description" content="Sign in to your company account on JobPortal to manage jobs and applicants.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #7c3aed;
+      --primary-light: #8b5cf6;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --error: #ef4444;
+      --bg: #0a0a0f;
+      --border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left panel — branding */
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px;
+      background: linear-gradient(145deg, #0d0d1a 0%, #1a0a3e 50%, #0d0d1a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 65%);
+      top: -100px; right: -100px;
+      border-radius: 50%;
+      animation: pulse 6s ease-in-out infinite;
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 65%);
+      bottom: -100px; left: -100px;
+      border-radius: 50%;
+      animation: pulse 8s ease-in-out infinite reverse;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+    .brand-content { position: relative; z-index: 1; }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .brand-logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+    }
+    .brand-logo-text {
+      font-size: 24px;
+      font-weight: 800;
+      color: white;
+    }
+    .brand-logo-text span { color: #a78bfa; }
+
+    .brand-tagline {
+      font-size: 40px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .brand-tagline .highlight {
+      background: linear-gradient(90deg, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+      max-width: 380px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+    .feature-icon {
+      width: 36px; height: 36px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #a78bfa;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Right panel — form */
+    .right-panel {
+      width: 480px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,10,20,0.95);
+      border-left: 1px solid var(--border);
+      padding: 40px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+      animation: slideIn 0.5s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .login-box h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .login-box .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap i.icon-left {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      color: #4b5563;
+      font-size: 14px;
+      transition: color 0.2s;
+      pointer-events: none;
+    }
+    input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 14px 14px 42px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      border-color: var(--primary);
+      background: rgba(124,58,237,0.06);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+    }
+    input:focus + .icon-left { color: var(--primary-light); }
+
+    .toggle-pw {
+      position: absolute;
+      right: 14px; top: 50%; transform: translateY(-50%);
+      color: #4b5563;
+      cursor: pointer; font-size: 14px;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--primary-light); }
+    .pw-field { padding-right: 42px; }
+
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      margin-top: -6px;
+    }
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .remember-me input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--primary);
+      padding: 0;
+      border-radius: 4px;
+    }
+    .forgot-link {
+      font-size: 13px;
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .forgot-link:hover { color: #a78bfa; }
+
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124,58,237,0.5);
+    }
+    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .alert.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #34d399; display: flex; }
+    .alert.error   { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; display: flex; }
+
+    .register-link {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .register-link a {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .register-link a:hover { color: #a78bfa; }
+
+    @media (max-width: 900px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; border-left: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT BRANDING PANEL -->
+<div class="left-panel">
+  <div class="brand-content">
+    <div class="brand-logo">
+      <div class="brand-logo-icon">🏢</div>
+      <div class="brand-logo-text">Job<span>Portal</span></div>
+    </div>
+
+    <h2 class="brand-tagline">
+      Hire the<br>
+      <span class="highlight">Best Talent</span><br>
+      Faster
+    </h2>
+    <p class="brand-desc">
+      Join thousands of companies finding top professionals on JobPortal. Post jobs, review applicants, and build your dream team.
+    </p>
+
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+        Post jobs in under 2 minutes
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+        Access thousands of qualified candidates
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+        Real-time application tracking
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-shield-check"></i></div>
+        Secure & verified profiles
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT FORM PANEL -->
+<div class="right-panel">
+  <div class="login-box">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Sign in to your company dashboard</p>
+
+    <div class="form-group">
+      <label for="email">Company Email</label>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="hr@company.com" required>
+        <i class="fa-solid fa-envelope icon-left"></i>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" class="pw-field" placeholder="Enter your password" required>
+        <i class="fa-solid fa-lock icon-left"></i>
+        <span class="toggle-pw" onclick="togglePw()">
+          <i class="fa-solid fa-eye" id="eyeIcon"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="row-between">
+      <label class="remember-me">
+        <input type="checkbox" id="remember"> Remember me
+      </label>
+      <a href="#" class="forgot-link">Forgot password?</a>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="login()">
+      <span id="btnText">Sign In</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div class="alert" id="alertBox">
+      <i class="fa-solid fa-circle-check"></i>
+      <span id="alertText"></span>
+    </div>
+
+    <div class="register-link">
+      New to JobPortal? <a href="company-register.html">Create company account</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Prefill remembered email
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('company_remember_email');
+    if (saved) {
+      document.getElementById('email').value = saved;
+      document.getElementById('remember').checked = true;
+    }
+  });
+
+  function togglePw() {
+    const pw = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (pw.type === 'password') {
+      pw.type = 'text';
+      icon.className = 'fa-solid fa-eye-slash';
+    } else {
+      pw.type = 'password';
+      icon.className = 'fa-solid fa-eye';
+    }
+  }
+
+  function showAlert(type, msg) {
+    const box = document.getElementById('alertBox');
+    const text = document.getElementById('alertText');
+    const icon = box.querySelector('i');
+    box.className = 'alert ' + type;
+    icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+    text.textContent = msg;
+  }
+
+  function setLoading(on) {
+    const btn = document.getElementById('loginBtn');
+    const txt = document.getElementById('btnText');
+    const sp  = document.getElementById('spinner');
+    btn.disabled = on;
+    txt.textContent = on ? 'Signing In...' : 'Sign In';
+    sp.style.display = on ? 'block' : 'none';
+  }
+
+  function login() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const remember = document.getElementById('remember').checked;
+
+    if (!email || !password) {
+      showAlert('error', 'Please enter your email and password.');
+      return;
+    }
+
+    setLoading(true);
+
+    fetch('http://localhost:8080/company/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+      setLoading(false);
+      if (data.status === 'success') {
+        if (remember) {
+          localStorage.setItem('company_remember_email', email);
+        } else {
+          localStorage.removeItem('company_remember_email');
+        }
+        localStorage.setItem('company', JSON.stringify(data.company));
+        showAlert('success', 'Login successful! Redirecting...');
+        setTimeout(() => window.location.href = 'company-dashboard.html', 1200);
+      } else {
+        showAlert('error', data.message || 'Invalid credentials. Please try again.');
+      }
+    })
+    .catch(() => {
+      setLoading(false);
+      showAlert('error', 'Server error. Make sure the backend is running.');
+    });
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+</script>
+</body>
+</html>

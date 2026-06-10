@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .btn-custom {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background: #5a67d8;
+        }
+
+        #msg {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card p-4">
+    <h3 class="text-center mb-3">Create Account</h3>
+
+    <input class="form-control mb-2" type="text" id="name" placeholder="Full Name">
+    <input class="form-control mb-2" type="email" id="email" placeholder="Email">
+    <input class="form-control mb-2" type="password" id="password" placeholder="Password">
+    <input class="form-control mb-3" type="password" id="confirmPassword" placeholder="Confirm Password">
+
+    <button class="btn btn-custom w-100" onclick="register()">Register</button>
+
+    <p class="text-center mt-3" id="msg"></p>
+
+    <p class="text-center mt-2">
+        Already have an account? <a href="/login.html">Login</a>
+    </p>
+</div>
+
+<script>
+
+    function register() {
+
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        let confirmPassword = document.getElementById("confirmPassword").value;
+
+        if(name === "" || email === "" || password === "" || confirmPassword === "") {
+            showMsg("️ Please fill all fields", "red");
+            return;
+        }
+
+        if(password !== confirmPassword) {
+            showMsg(" Passwords do not match", "red");
+            return;
+        }
+
+        // json response kore
+        fetch("http://localhost:8080/auth/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                password: password,
+                //fix kore diya lagbe
+                role: "USER"
+            })
+        })
+            .then(res => res.json())   // 🔥 FIX IMPORTANT
+            .then(data => {
+
+                if(data.status === "success") {
+                    showMsg("✅ Registration successful! Redirecting...", "lightgreen");
+
+                    setTimeout(() => {
+                        window.location.href = "/login.html";
+                    }, 1500);
+                }
+                else {
+                    showMsg(data.message, "red");
+                }
+
+            })
+            .catch(() => {
+                showMsg("❌ Server error!", "red");
+            });
+    }
+
+    // helper
+    function showMsg(message, color) {
+        let msg = document.getElementById("msg");
+        msg.innerText = message;
+        msg.style.color = color;
+    }
+
+</script>
+
+</body>
+</html>

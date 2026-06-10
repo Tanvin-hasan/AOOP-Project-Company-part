@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Dashboard – JobPortal</title>
+  <meta name="description" content="Manage your job postings and applicants on JobPortal company dashboard.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #7c3aed;
+      --primary-light: #8b5cf6;
+      --primary-dark: #6d28d9;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg: #0b0b14;
+      --surface: #12121f;
+      --surface2: #1a1a2e;
+      --border: rgba(255,255,255,0.07);
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --text-secondary: #94a3b8;
+      --sidebar-w: 260px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===================== SIDEBAR ===================== */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-logo {
+      padding: 28px 24px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+    }
+    .sidebar-logo-text { font-size: 17px; font-weight: 700; }
+    .sidebar-logo-text span { color: #a78bfa; }
+
+    .sidebar-company {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .company-avatar {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .company-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .company-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #34d399;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .company-badge::before { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block; }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+    }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 12px;
+      margin: 16px 0 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      user-select: none;
+      position: relative;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-item.active {
+      background: rgba(124,58,237,0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(124,58,237,0.2);
+    }
+    .nav-item.active .nav-icon { color: var(--primary-light); }
+    .nav-icon { width: 18px; text-align: center; font-size: 14px; }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-logout {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px;
+      color: #f87171;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-logout:hover { background: rgba(239,68,68,0.15); }
+
+    /* ===================== MAIN CONTENT ===================== */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ---- TOPBAR ---- */
+    .topbar {
+      height: 70px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar-time {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .avatar-circle {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* ---- PAGE CONTENT ---- */
+    .content {
+      padding: 32px;
+      flex: 1;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .page-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ---- STAT CARDS ---- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.14); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      opacity: 0.08;
+    }
+    .stat-card.purple::before { background: var(--primary); }
+    .stat-card.cyan::before   { background: var(--accent); }
+    .stat-card.green::before  { background: var(--success); }
+    .stat-card.amber::before  { background: var(--warning); }
+
+    .stat-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+    .stat-card.purple .stat-icon { background: rgba(124,58,237,0.15); color: #a78bfa; }
+    .stat-card.cyan   .stat-icon { background: rgba(6,182,212,0.15);   color: #22d3ee; }
+    .stat-card.green  .stat-icon { background: rgba(16,185,129,0.15);  color: #34d399; }
+    .stat-card.amber  .stat-icon { background: rgba(245,158,11,0.15);  color: #fbbf24; }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ---- CARDS / PANELS ---- */
+    .panel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel-title i { color: var(--primary-light); font-size: 14px; }
+
+    /* ---- FORM ELEMENTS ---- */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-full  { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .input-wrap { position: relative; }
+    .input-wrap i {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 13px;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .input-wrap.textarea-wrap i { top: 17px; transform: none; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="number"],
+    select, textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 12px 12px 38px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: rgba(124,58,237,0.05);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    input:focus + i, select:focus + i { color: var(--primary-light); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
+    select option { background: #1e1b4b; color: var(--text); }
+    textarea { resize: vertical; min-height: 100px; padding-top: 12px; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.45); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    .btn-success {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #34d399;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-success:hover { background: rgba(16,185,129,0.2); }
+
+    .btn-reject {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fbbf24;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-reject:hover { background: rgba(245,158,11,0.2); }
+
+    /* ---- TABLE ---- */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      background: rgba(255,255,255,0.03);
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.025); }
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+
+    /* ---- BADGES ---- */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-active   { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+    .badge-closed   { background: rgba(100,116,139,0.12); color: #94a3b8; border: 1px solid rgba(100,116,139,0.25); }
+    .badge-pending  { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+    .badge-accepted { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+    .badge-rejected { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+    .badge-full     { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+    .badge-part     { background: rgba(6,182,212,0.12);  color: #22d3ee; border: 1px solid rgba(6,182,212,0.25); }
+    .badge-remote   { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+
+    /* ---- EMPTY STATE ---- */
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .empty-state h3 { font-size: 16px; color: var(--text-secondary); margin-bottom: 6px; }
+    .empty-state p  { font-size: 13px; }
+
+    /* ---- ALERT ---- */
+    .alert-bar {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .alert-bar.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #34d399; display: flex; }
+    .alert-bar.error   { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; display: flex; }
+
+    /* ---- PROFILE PAGE ---- */
+    .profile-grid { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+    .profile-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 16px;
+      text-transform: uppercase;
+    }
+    .profile-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .profile-card p  { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+
+    /* ---- SPINNER ---- */
+    .spinner-sm {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .main { margin-left: 0; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .profile-grid { grid-template-columns: 1fr; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">🏢</div>
+    <div class="sidebar-logo-text">Job<span>Portal</span></div>
+  </div>
+
+  <div class="sidebar-company">
+    <div class="company-avatar" id="sidebarAvatar">C</div>
+    <div class="company-name" id="sidebarName">Company</div>
+    <div class="company-badge">Active Account</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <i class="fa-solid fa-gauge nav-icon"></i> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('post-job', this)">
+      <i class="fa-solid fa-plus-circle nav-icon"></i> Post a Job
+    </div>
+
+    <div class="nav-label">Manage</div>
+    <div class="nav-item" onclick="showPage('my-jobs', this)">
+      <i class="fa-solid fa-briefcase nav-icon"></i> My Jobs
+      <span class="nav-badge" id="jobsNavBadge">0</span>
+    </div>
+    <div class="nav-item" onclick="showPage('applicants', this)">
+      <i class="fa-solid fa-users nav-icon"></i> Applicants
+      <span class="nav-badge" id="appNavBadge" style="background:#f59e0b;">0</span>
+    </div>
+
+    <div class="nav-label">Settings</div>
+    <div class="nav-item" onclick="showPage('profile', this)">
+      <i class="fa-solid fa-building nav-icon"></i> Company Profile
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Sign Out
+    </button>
+  </div>
+</aside>
+
+<!-- ==================== MAIN ==================== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-right">
+      <span class="topbar-time" id="topbarClock"></span>
+      <div class="avatar-circle" id="topbarAvatar">C</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ========== PAGE: DASHBOARD ========== -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h2>Welcome back, <span id="welcomeName">Company</span> 👋</h2>
+        <p>Here's what's happening with your job portal account today.</p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card purple">
+          <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="stat-value" id="st-jobs">0</div>
+          <div class="stat-label">Total Jobs Posted</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-value" id="st-applicants">0</div>
+          <div class="stat-label">Total Applicants</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-value" id="st-accepted">0</div>
+          <div class="stat-label">Accepted</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-value" id="st-pending">0</div>
+          <div class="stat-label">Pending Review</div>
+        </div>
+      </div>
+
+      <!-- RECENT JOBS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-list-check"></i> Recent Jobs</div>
+          <button class="btn-primary" style="padding:9px 18px;font-size:13px;" onclick="showPage('post-job', null)">
+            <i class="fa-solid fa-plus"></i> Post New Job
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Posted</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentJobsTbody">
+              <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div><h3>No jobs yet</h3><p>Post your first job to get started</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RECENT APPLICANTS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-user-tie"></i> Recent Applicants</div>
+          <button class="btn-primary" style="padding:9px 18px;font-size:13px;background:linear-gradient(135deg,#0891b2,#06b6d4);" onclick="showPage('applicants', null)">
+            View All
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Applicant</th>
+                <th>Email</th>
+                <th>Job Title</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentApplicantsTbody">
+              <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📩</div><h3>No applicants yet</h3><p>Applications will appear here</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: POST JOB ========== -->
+    <div class="page" id="page-post-job">
+      <div class="page-header">
+        <h2>Post a New Job</h2>
+        <p>Fill in the details below to publish a new job listing.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-pen-to-square"></i> Job Details</div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="j-title">Job Title *</label>
+            <div class="input-wrap">
+              <input type="text" id="j-title" placeholder="e.g. Senior React Developer">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="j-type">Job Type *</label>
+            <div class="input-wrap">
+              <select id="j-type">
+                <option value="">Select type</option>
+                <option>Full-time</option>
+                <option>Part-time</option>
+                <option>Remote</option>
+                <option>Contract</option>
+                <option>Internship</option>
+              </select>
+              <i class="fa-solid fa-tags"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="j-location">Location</label>
+            <div class="input-wrap">
+              <input type="text" id="j-location" placeholder="e.g. Dhaka, Bangladesh">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="j-salary">Salary Range</label>
+            <div class="input-wrap">
+              <input type="text" id="j-salary" placeholder="e.g. ৳30,000 – ৳60,000 / month">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label for="j-desc">Job Description *</label>
+            <div class="input-wrap textarea-wrap">
+              <textarea id="j-desc" rows="5" placeholder="Describe the role, responsibilities, requirements, and what you offer..."></textarea>
+              <i class="fa-solid fa-align-left"></i>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; align-items:center; gap:14px;">
+          <button class="btn-primary" id="postJobBtn" onclick="postJob()">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span id="postBtnText">Publish Job</span>
+            <div class="spinner-sm" id="postSpinner"></div>
+          </button>
+          <div class="alert-bar" id="postAlert" style="margin-top:0; flex:1;">
+            <i></i><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: MY JOBS ========== -->
+    <div class="page" id="page-my-jobs">
+      <div class="page-header">
+        <h2>My Posted Jobs</h2>
+        <p>All jobs posted by your company. You can delete jobs here.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-briefcase"></i> Job Listings</div>
+          <button class="btn-primary" style="padding:9px 18px;font-size:13px;" onclick="showPage('post-job', null)">
+            <i class="fa-solid fa-plus"></i> Post New Job
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Job Title</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Salary</th>
+                <th>Posted</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="myJobsTbody">
+              <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><h3>No jobs posted yet</h3><p>Post your first job to see it here</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: APPLICANTS ========== -->
+    <div class="page" id="page-applicants">
+      <div class="page-header">
+        <h2>Applicants</h2>
+        <p>Review all candidates who applied to your job listings.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-users"></i> All Applications</div>
+          <select id="filterStatus" onchange="filterApplicants()" style="padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;cursor:pointer;outline:none;">
+            <option value="">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="ACCEPTED">Accepted</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Applicant</th>
+                <th>Email</th>
+                <th>Job Title</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="applicantsTbody">
+              <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📩</div><h3>No applications yet</h3><p>Applications will appear here once candidates apply</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: PROFILE ========== -->
+    <div class="page" id="page-profile">
+      <div class="page-header">
+        <h2>Company Profile</h2>
+        <p>Update your company information visible to job seekers.</p>
+      </div>
+      <div class="profile-grid">
+        <!-- Left: avatar card -->
+        <div>
+          <div class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">C</div>
+            <h3 id="profileName">Company</h3>
+            <p id="profileEmail">email@company.com</p>
+            <div class="company-badge" style="justify-content:center;">Active Account</div>
+          </div>
+        </div>
+        <!-- Right: edit form -->
+        <div class="panel" style="margin-bottom:0;">
+          <div class="panel-header">
+            <div class="panel-title"><i class="fa-solid fa-pen"></i> Edit Information</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="p-name">Company Name</label>
+              <div class="input-wrap">
+                <input type="text" id="p-name" placeholder="Company Name">
+                <i class="fa-solid fa-building"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="p-industry">Industry</label>
+              <div class="input-wrap">
+                <select id="p-industry">
+                  <option value="">Select industry</option>
+                  <option>Technology</option>
+                  <option>Finance</option>
+                  <option>Healthcare</option>
+                  <option>Education</option>
+                  <option>Retail</option>
+                  <option>Manufacturing</option>
+                  <option>Media</option>
+                  <option>Logistics</option>
+                  <option>Real Estate</option>
+                  <option>Other</option>
+                </select>
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="p-phone">Phone</label>
+              <div class="input-wrap">
+                <input type="tel" id="p-phone" placeholder="+880 1700 000000">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="p-location">Location</label>
+              <div class="input-wrap">
+                <input type="text" id="p-location" placeholder="Dhaka, Bangladesh">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+            </div>
+            <div class="form-group form-full">
+              <label for="p-website">Website</label>
+              <div class="input-wrap">
+                <input type="url" id="p-website" placeholder="https://yourcompany.com">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+            </div>
+            <div class="form-group form-full">
+              <label for="p-desc">About the Company</label>
+              <div class="input-wrap textarea-wrap">
+                <textarea id="p-desc" rows="4" placeholder="Describe your company culture, mission, and values..."></textarea>
+                <i class="fa-solid fa-align-left"></i>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px; display:flex; align-items:center; gap:14px;">
+            <button class="btn-primary" id="saveProfileBtn" onclick="saveProfile()">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span id="saveBtnText">Save Changes</span>
+              <div class="spinner-sm" id="saveSpinner"></div>
+            </button>
+            <div class="alert-bar" id="profileAlert" style="margin-top:0; flex:1;">
+              <i></i><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ==================== GLOBALS ====================
+let company = JSON.parse(localStorage.getItem('company'));
+let allApplications = [];
+let allJobs = [];
+
+// Auth guard
+if (!company) {
+  window.location.href = 'company-login.html';
+}
+
+// ==================== INIT ====================
+function init() {
+  const name = company.name || 'Company';
+  const initial = name.charAt(0).toUpperCase();
+
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarAvatar').textContent = initial;
+  document.getElementById('topbarAvatar').textContent = initial;
+  document.getElementById('welcomeName').textContent = name;
+  document.getElementById('profileAvatar').textContent = initial;
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileEmail').textContent = company.email || '';
+
+  // Pre-fill profile form
+  document.getElementById('p-name').value     = company.name     || '';
+  document.getElementById('p-industry').value = company.industry || '';
+  document.getElementById('p-phone').value    = company.phone    || '';
+  document.getElementById('p-location').value = company.location || '';
+  document.getElementById('p-website').value  = company.website  || '';
+  document.getElementById('p-desc').value     = company.description || '';
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  loadDashboardData();
+}
+
+function updateClock() {
+  const now = new Date();
+  const opts = { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' };
+  document.getElementById('topbarClock').textContent = now.toLocaleDateString('en-US', opts);
+}
+
+// ==================== NAVIGATION ====================
+function showPage(pageId, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+
+  const titles = {
+    'dashboard': 'Dashboard',
+    'post-job': 'Post a Job',
+    'my-jobs': 'My Jobs',
+    'applicants': 'Applicants',
+    'profile': 'Company Profile'
+  };
+  document.getElementById('topbarTitle').textContent = titles[pageId] || 'Dashboard';
+
+  if (pageId === 'my-jobs')    loadMyJobs();
+  if (pageId === 'applicants') loadApplicants();
+}
+
+// ==================== LOAD DASHBOARD DATA ====================
+function loadDashboardData() {
+  const name = company.name;
+
+  // Load jobs
+  fetch(`http://localhost:8080/jobs/company/${encodeURIComponent(name)}`)
+    .then(r => r.json())
+    .then(jobs => {
+      allJobs = jobs;
+      document.getElementById('st-jobs').textContent = jobs.length;
+      document.getElementById('jobsNavBadge').textContent = jobs.length;
+      renderRecentJobs(jobs.slice(0, 5));
+    })
+    .catch(()=>{});
+
+  // Load applications + stats
+  fetch(`http://localhost:8080/application/company/${encodeURIComponent(name)}`)
+    .then(r => r.json())
+    .then(apps => {
+      allApplications = apps;
+      const pending  = apps.filter(a => a.status === 'PENDING').length;
+      const accepted = apps.filter(a => a.status === 'ACCEPTED').length;
+      document.getElementById('st-applicants').textContent = apps.length;
+      document.getElementById('st-accepted').textContent   = accepted;
+      document.getElementById('st-pending').textContent    = pending;
+      document.getElementById('appNavBadge').textContent   = pending;
+      renderRecentApplicants(apps.slice(0, 5));
+    })
+    .catch(()=>{});
+}
+
+// ==================== RECENT JOBS (dashboard) ====================
+function renderRecentJobs(jobs) {
+  const tbody = document.getElementById('recentJobsTbody');
+  if (!jobs || jobs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div><h3>No jobs yet</h3><p>Post your first job to get started</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = jobs.map(j => `
+    <tr>
+      <td style="color:var(--text);font-weight:500;">${j.title}</td>
+      <td>${jobTypeBadge(j.jobType)}</td>
+      <td>${j.location || '<span style="color:var(--text-muted)">—</span>'}</td>
+      <td>${formatDate(j.postedDate)}</td>
+      <td>${statusBadge(j.status)}</td>
+    </tr>
+  `).join('');
+}
+
+// ==================== RECENT APPLICANTS (dashboard) ====================
+function renderRecentApplicants(apps) {
+  const tbody = document.getElementById('recentApplicantsTbody');
+  if (!apps || apps.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📩</div><h3>No applicants yet</h3><p>Applications will appear here</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = apps.map(a => `
+    <tr>
+      <td style="color:var(--text);font-weight:500;">${a.userName}</td>
+      <td>${a.userEmail}</td>
+      <td>${a.jobTitle}</td>
+      <td>${appStatusBadge(a.status)}</td>
+    </tr>
+  `).join('');
+}
+
+// ==================== POST JOB ====================
+function postJob() {
+  const title    = document.getElementById('j-title').value.trim();
+  const jobType  = document.getElementById('j-type').value;
+  const location = document.getElementById('j-location').value.trim();
+  const salary   = document.getElementById('j-salary').value.trim();
+  const desc     = document.getElementById('j-desc').value.trim();
+
+  if (!title || !desc || !jobType) {
+    showAlertBar('postAlert', 'error', 'Please fill in Job Title, Type, and Description.');
+    return;
+  }
+
+  setLoading('postJobBtn', 'postBtnText', 'postSpinner', true, 'Publishing...');
+
+  fetch('http://localhost:8080/jobs/post', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title,
+      description: desc,
+      jobType,
+      location,
+      salary,
+      companyName: company.name,
+      status: 'ACTIVE'
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    setLoading('postJobBtn', 'postBtnText', 'postSpinner', false, 'Publish Job');
+    if (data.status === 'success' || data.id || data.job) {
+      showAlertBar('postAlert', 'success', '✅ Job posted successfully!');
+      // Clear form
+      ['j-title','j-location','j-salary','j-desc'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('j-type').value = '';
+      // Refresh stats
+      loadDashboardData();
+    } else {
+      showAlertBar('postAlert', 'error', 'Failed to post job. Please try again.');
+    }
+  })
+  .catch(() => {
+    setLoading('postJobBtn', 'postBtnText', 'postSpinner', false, 'Publish Job');
+    showAlertBar('postAlert', 'error', 'Server error. Make sure the backend is running.');
+  });
+}
+
+// ==================== MY JOBS ====================
+function loadMyJobs() {
+  fetch(`http://localhost:8080/jobs/company/${encodeURIComponent(company.name)}`)
+    .then(r => r.json())
+    .then(jobs => {
+      allJobs = jobs;
+      const tbody = document.getElementById('myJobsTbody');
+      if (!jobs || jobs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div><h3>No jobs posted yet</h3><p>Post your first job to see it here</p></div></td></tr>`;
+        return;
+      }
+      tbody.innerHTML = jobs.map((j, i) => `
+        <tr>
+          <td style="color:var(--text-muted);">${i+1}</td>
+          <td style="color:var(--text);font-weight:500;">${j.title}</td>
+          <td>${jobTypeBadge(j.jobType)}</td>
+          <td>${j.location || '<span style="color:var(--text-muted)">—</span>'}</td>
+          <td style="color:var(--text-muted);">${j.salary || '—'}</td>
+          <td style="color:var(--text-muted);white-space:nowrap;">${formatDate(j.postedDate)}</td>
+          <td>${statusBadge(j.status)}</td>
+          <td>
+            <button class="btn-danger" onclick="deleteJob(${j.id})">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      document.getElementById('jobsNavBadge').textContent = jobs.length;
+    })
+    .catch(() => {});
+}
+
+function deleteJob(id) {
+  if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) return;
+
+  fetch(`http://localhost:8080/jobs/${id}`, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        loadMyJobs();
+        loadDashboardData();
+      } else {
+        alert('Failed to delete job: ' + (data.message || 'Unknown error'));
+      }
+    })
+    .catch(() => alert('Server error. Please try again.'));
+}
+
+// ==================== APPLICANTS ====================
+function loadApplicants() {
+  fetch(`http://localhost:8080/application/company/${encodeURIComponent(company.name)}`)
+    .then(r => r.json())
+    .then(apps => {
+      allApplications = apps;
+      renderApplicants(apps);
+      document.getElementById('appNavBadge').textContent = apps.filter(a => a.status==='PENDING').length;
+    })
+    .catch(() => {});
+}
+
+function filterApplicants() {
+  const filter = document.getElementById('filterStatus').value;
+  const filtered = filter ? allApplications.filter(a => a.status === filter) : allApplications;
+  renderApplicants(filtered);
+}
+
+function renderApplicants(apps) {
+  const tbody = document.getElementById('applicantsTbody');
+  if (!apps || apps.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📩</div><h3>No applications found</h3><p>Applications will appear here once candidates apply</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = apps.map((a, i) => `
+    <tr>
+      <td style="color:var(--text-muted);">${i+1}</td>
+      <td style="color:var(--text);font-weight:500;">${a.userName}</td>
+      <td style="color:var(--text-muted);">${a.userEmail}</td>
+      <td>${a.jobTitle}</td>
+      <td>${appStatusBadge(a.status)}</td>
+      <td>
+        ${a.status === 'PENDING' ? `
+          <button class="btn-success" onclick="updateAppStatus(${a.id},'ACCEPTED')">
+            <i class="fa-solid fa-check"></i> Accept
+          </button>
+          <button class="btn-reject" style="margin-left:6px;" onclick="updateAppStatus(${a.id},'REJECTED')">
+            <i class="fa-solid fa-xmark"></i> Reject
+          </button>
+        ` : `<span style="color:var(--text-muted);font-size:12px;">No actions</span>`}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function updateAppStatus(id, status) {
+  fetch(`http://localhost:8080/application/${id}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.status === 'success') {
+      loadApplicants();
+      loadDashboardData();
+    }
+  })
+  .catch(() => alert('Error updating application status.'));
+}
+
+// ==================== PROFILE ====================
+function saveProfile() {
+  const updated = {
+    name:        document.getElementById('p-name').value.trim(),
+    industry:    document.getElementById('p-industry').value,
+    phone:       document.getElementById('p-phone').value.trim(),
+    location:    document.getElementById('p-location').value.trim(),
+    website:     document.getElementById('p-website').value.trim(),
+    description: document.getElementById('p-desc').value.trim()
+  };
+
+  if (!updated.name) {
+    showAlertBar('profileAlert', 'error', 'Company name is required.');
+    return;
+  }
+
+  setLoading('saveProfileBtn', 'saveBtnText', 'saveSpinner', true, 'Saving...');
+
+  fetch(`http://localhost:8080/company/profile/${encodeURIComponent(company.email)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  })
+  .then(r => r.json())
+  .then(data => {
+    setLoading('saveProfileBtn', 'saveBtnText', 'saveSpinner', false, 'Save Changes');
+    if (data.status === 'success') {
+      // Update localStorage
+      company = { ...company, ...data.company };
+      localStorage.setItem('company', JSON.stringify(company));
+      // Update UI
+      const name = company.name;
+      const initial = name.charAt(0).toUpperCase();
+      document.getElementById('sidebarName').textContent  = name;
+      document.getElementById('sidebarAvatar').textContent = initial;
+      document.getElementById('topbarAvatar').textContent  = initial;
+      document.getElementById('welcomeName').textContent   = name;
+      document.getElementById('profileAvatar').textContent = initial;
+      document.getElementById('profileName').textContent   = name;
+      showAlertBar('profileAlert', 'success', '✅ Profile updated successfully!');
+    } else {
+      showAlertBar('profileAlert', 'error', data.message || 'Update failed.');
+    }
+  })
+  .catch(() => {
+    setLoading('saveProfileBtn', 'saveBtnText', 'saveSpinner', false, 'Save Changes');
+    showAlertBar('profileAlert', 'error', 'Server error. Please try again.');
+  });
+}
+
+// ==================== LOGOUT ====================
+function logout() {
+  if (confirm('Are you sure you want to sign out?')) {
+    localStorage.removeItem('company');
+    window.location.href = 'company-login.html';
+  }
+}
+
+// ==================== HELPERS ====================
+function setLoading(btnId, txtId, spId, on, label) {
+  document.getElementById(btnId).disabled = on;
+  document.getElementById(txtId).textContent = label;
+  document.getElementById(spId).style.display = on ? 'block' : 'none';
+}
+
+function showAlertBar(id, type, msg) {
+  const bar = document.getElementById(id);
+  bar.className = 'alert-bar ' + type;
+  bar.querySelector('span').textContent = msg;
+  bar.querySelector('i').className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+  setTimeout(() => { bar.className = 'alert-bar'; }, 4000);
+}
+
+function statusBadge(status) {
+  if (!status) return '<span class="badge badge-active">Active</span>';
+  const cls = status === 'ACTIVE' ? 'badge-active' : 'badge-closed';
+  return `<span class="badge ${cls}">${status}</span>`;
+}
+
+function appStatusBadge(status) {
+  const map = {
+    'PENDING':  'badge-pending',
+    'ACCEPTED': 'badge-accepted',
+    'REJECTED': 'badge-rejected'
+  };
+  return `<span class="badge ${map[status] || 'badge-pending'}">${status || 'PENDING'}</span>`;
+}
+
+function jobTypeBadge(type) {
+  if (!type) return '<span style="color:var(--text-muted)">—</span>';
+  const map = {
+    'Full-time': 'badge-full',
+    'Part-time': 'badge-part',
+    'Remote':    'badge-remote',
+    'Contract':  'badge-pending',
+    'Internship':'badge-cyan'
+  };
+  return `<span class="badge ${map[type] || 'badge-full'}">${type}</span>`;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  } catch { return '—'; }
+}
+
+// ==================== START ====================
+init();
+</script>
+</body>
+</html>
